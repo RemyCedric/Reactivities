@@ -46,6 +46,7 @@ module.exports = {
                 mjs: 'never',
             },
         ],
+        'no-unused-expressions': ['error', { allowTernary: true }],
         'no-use-before-define': 'off',
         '@typescript-eslint/no-use-before-define': ['error'],
     },
