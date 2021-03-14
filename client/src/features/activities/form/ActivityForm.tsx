@@ -1,13 +1,18 @@
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
+import { v4 as uuid } from 'uuid';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/store/store';
 
 const ActivityForm = (): React.ReactElement => {
     const { activityStore } = useStore();
-    const { selectedActivity, closeForm, createActivity, updateActivity, loading } = activityStore;
+    const { createActivity, updateActivity, loading, loadActivity, loadingInitial } = activityStore;
+    const { id } = useParams<{ id: string }>();
+    const history = useHistory();
 
-    const initialState = selectedActivity ?? {
+    const [activity, setActivity] = useState({
         id: '',
         title: '',
         date: '',
@@ -15,12 +20,30 @@ const ActivityForm = (): React.ReactElement => {
         city: '',
         category: '',
         venue: '',
-    };
+    });
 
-    const [activity, setActivity] = useState(initialState);
+    useEffect(() => {
+        if (id) {
+            loadActivity(id).then((a) => {
+                if (a) setActivity(a);
+            });
+        }
+    }, [loadActivity, id]);
 
     const handleSubmit = (): void => {
-        activity.id ? updateActivity(activity) : createActivity(activity);
+        if (activity.id.length === 0) {
+            const newactivity = {
+                ...activity,
+                id: uuid(),
+            };
+            createActivity(newactivity).then(() => {
+                history.push(`/activities/${newactivity.id}`);
+            });
+        } else {
+            updateActivity(activity).then(() => {
+                history.push(`/activities/${activity.id}`);
+            });
+        }
     };
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
@@ -30,6 +53,10 @@ const ActivityForm = (): React.ReactElement => {
             [name]: value,
         });
     };
+
+    if (loadingInitial) {
+        return <LoadingComponent content="Loading activity..." />;
+    }
 
     return (
         <Segment clearing>
@@ -72,7 +99,7 @@ const ActivityForm = (): React.ReactElement => {
                     onChange={(event) => handleInputChange(event)}
                 />
                 <Button loading={loading} floated="right" positive type="submit" content="submit" />
-                <Button floated="right" type="button" content="cancel" onClick={closeForm} />
+                <Button as={Link} to="/activities" floated="right" type="button" content="cancel" />
             </Form>
         </Segment>
     );
