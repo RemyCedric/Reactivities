@@ -1,15 +1,12 @@
+import { observer } from 'mobx-react-lite';
 import React, { SyntheticEvent, useState } from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/store/store';
 
-interface Props {
-    activities: Activity[];
-    selectActivity: (id: string) => void;
-    deleteActivity: (id: string) => void;
-    submitting: boolean;
-}
+const ActivityList = (): React.ReactElement => {
+    const { activityStore } = useStore();
+    const { activitiesbyDate, selectActivity, deleteActivity, loading } = activityStore;
 
-const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }: Props): React.ReactElement => {
     const [target, setTarget] = useState('');
 
     function handleActivityDelete(event: SyntheticEvent<HTMLButtonElement>, id: string) {
@@ -20,7 +17,7 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
     return (
         <Segment>
             <Item.Group divided>
-                {activities.map((activity) => (
+                {activitiesbyDate.map((activity) => (
                     <Item key={activity.id}>
                         <Item.Content>
                             <Item.Header as="a">{activity.title}</Item.Header>
@@ -40,7 +37,7 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
                                 />
                                 <Button
                                     name={activity.id}
-                                    loading={submitting && target === activity.id}
+                                    loading={loading && target === activity.id}
                                     floated="right"
                                     content="Delete"
                                     color="red"
@@ -56,4 +53,4 @@ const ActivityList = ({ activities, selectActivity, deleteActivity, submitting }
     );
 };
 
-export default ActivityList;
+export default observer(ActivityList);

@@ -49,6 +49,7 @@ module.exports = {
         'no-unused-expressions': ['error', { allowTernary: true }],
         'no-use-before-define': 'off',
         'react/require-default-props': ['error', { ignoreFunctionalComponents: true }],
+        'no-param-reassign': ['error', { props: false }],
         '@typescript-eslint/no-use-before-define': ['error'],
     },
 };
