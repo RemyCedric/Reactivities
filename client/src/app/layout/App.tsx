@@ -1,17 +1,22 @@
 import React from 'react';
 import { Container } from 'semantic-ui-react';
 import { observer } from 'mobx-react-lite';
-import { Route, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import NavBar from './NavBar';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
 import HomePage from '../../features/home/HomePage';
 import ActivityForm from '../../features/activities/form/ActivityForm';
 import ActivityDetails from '../../features/activities/details/ActivityDetails';
+import TestErrors from '../../features/Errors/TestError';
+import NotFound from '../../features/Errors/NotFound';
+import ServerError from '../../features/Errors/ServerError';
 
 const App = (): React.ReactElement => {
     const location = useLocation();
     return (
         <>
+            <ToastContainer position="bottom-right" hideProgressBar />
             <Route exact path="/" component={HomePage} />
             <Route
                 path="/(.+)"
@@ -19,13 +24,19 @@ const App = (): React.ReactElement => {
                     <>
                         <NavBar />
                         <Container style={{ marginTop: '7em' }}>
-                            <Route exact path="/activities" component={ActivityDashboard} />
-                            <Route path="/activities/:id" component={ActivityDetails} />
-                            <Route
-                                path={['/createActivity', '/manage/:id']}
-                                key={location.key}
-                                component={ActivityForm}
-                            />
+                            <Switch>
+                                <Route exact path="/activities" component={ActivityDashboard} />
+                                <Route path="/activities/:id" component={ActivityDetails} />
+                                <Route
+                                    path={['/createActivity', '/manage/:id']}
+                                    key={location.key}
+                                    component={ActivityForm}
+                                />
+                                <Route path="/errors" component={TestErrors} />
+                                <Route path="/server-error" component={ServerError} />
+
+                                <Route component={NotFound} />
+                            </Switch>
                         </Container>
                     </>
                 )}
