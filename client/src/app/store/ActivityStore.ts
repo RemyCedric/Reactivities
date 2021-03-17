@@ -18,14 +18,17 @@ export default class ActivityStore {
     }
 
     get activitiesbyDate(): Activity[] {
-        return Array.from(this.activityRegistery.values()).sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return Array.from(this.activityRegistery.values()).sort((a, b) => a.date!.getTime() - b.date!.getTime());
     }
 
     get groupedByDateActivities(): [string, Activity[]][] {
         return Object.entries(
             this.activitiesbyDate.reduce((activities, activity) => {
-                const { date } = activity;
-                activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+                const date = activity.date?.toISOString().split('T')[0];
+                if (date) {
+                    activities[date] = activities[date] ? [...activities[date], activity] : [activity];
+                }
                 return activities;
             }, {} as { [key: string]: Activity[] }),
         );
@@ -74,8 +77,7 @@ export default class ActivityStore {
     };
 
     private setActivity = (activity: Activity): void => {
-        // eslint-disable-next-line prefer-destructuring
-        activity.date = activity.date.split('T')[0];
+        activity.date = new Date(activity.date ? activity.date : '');
         this.activityRegistery.set(activity.id, activity);
     };
 
