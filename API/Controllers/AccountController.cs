@@ -44,11 +44,13 @@ namespace API.Controllers
         {
             if (await _userManager.Users.AnyAsync(u => u.Email.ToLower() == registerDto.Email.ToLower()))
             {
-                return BadRequest("Problem registering user");
+                ModelState.AddModelError("email", "Problem registering user");
+                return ValidationProblem();
             }
             if (await _userManager.Users.AnyAsync(u => u.UserName.ToLower() == registerDto.Username.ToLower()))
             {
-                return BadRequest("Problem registering user");
+                ModelState.AddModelError("email", "Problem registering user");
+                return ValidationProblem();
             }
 
             var user = new AppUser

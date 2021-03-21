@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Message } from 'semantic-ui-react';
 
 interface Props {
-    errors: string[] | null;
+    errors: any;
 }
 
 const ValidationErrors = ({ errors }: Props): React.ReactElement => {
@@ -10,7 +11,7 @@ const ValidationErrors = ({ errors }: Props): React.ReactElement => {
         <Message error>
             {errors && (
                 <Message.List>
-                    {errors.map((error) => (
+                    {errors.map((error: any) => (
                         <Message.Item key={`${error}`}>{error}</Message.Item>
                     ))}
                 </Message.List>
