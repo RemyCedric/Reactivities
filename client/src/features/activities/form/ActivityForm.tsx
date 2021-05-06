@@ -11,24 +11,16 @@ import MyTextArea from '../../../app/common/form/MyTextArea';
 import MyTextInput from '../../../app/common/form/MyTextInput';
 import categoryOptions from '../../../app/common/options/categoryOption';
 import LoadingComponent from '../../../app/layout/LoadingComponent';
-import { Activity } from '../../../app/models/activity';
+import ActivityFormValues from '../../../app/models/activityFormValues';
 import { useStore } from '../../../app/store/store';
 
 const ActivityForm = (): React.ReactElement => {
     const { activityStore } = useStore();
-    const { createActivity, updateActivity, loading, loadActivity, loadingInitial } = activityStore;
+    const { createActivity, updateActivity, loadActivity, loadingInitial } = activityStore;
     const { id } = useParams<{ id: string }>();
     const history = useHistory();
 
-    const [activity, setActivity] = useState<Activity>({
-        id: '',
-        title: '',
-        date: null,
-        description: '',
-        city: '',
-        category: '',
-        venue: '',
-    });
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     const validationSchema = Yup.object({
         title: Yup.string().required('The activity title is required'),
@@ -42,13 +34,13 @@ const ActivityForm = (): React.ReactElement => {
     useEffect(() => {
         if (id) {
             loadActivity(id).then((a) => {
-                if (a) setActivity(a);
+                if (a) setActivity(new ActivityFormValues(a));
             });
         }
     }, [loadActivity, id]);
 
-    const handleFormSubmit = (activityToSave: Activity): void => {
-        if (activityToSave.id.length === 0) {
+    const handleFormSubmit = (activityToSave: ActivityFormValues): void => {
+        if (!activityToSave.id) {
             const newactivity = {
                 ...activityToSave,
                 id: uuid(),
@@ -93,7 +85,7 @@ const ActivityForm = (): React.ReactElement => {
                         <MyTextInput placeholder="Venue" name="venue" />
                         <Button
                             disabled={isSubmitting || !dirty || !isValid}
-                            loading={loading}
+                            loading={isSubmitting}
                             floated="right"
                             positive
                             type="submit"

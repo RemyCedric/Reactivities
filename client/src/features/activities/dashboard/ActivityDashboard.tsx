@@ -7,15 +7,16 @@ import ActivityFilters from './ActivityFilters';
 import ActivityList from './ActivityList';
 
 const ActivityDashboard = (): React.ReactElement => {
-    const { activityStore } = useStore();
-    const { loadActivities, activityRegistery } = activityStore;
+    const {
+        activityStore: { loadActivities, activityRegistery, loadingInitial },
+    } = useStore();
     useEffect(() => {
         if (activityRegistery.size <= 1) {
             loadActivities();
         }
     }, [loadActivities, activityRegistery.size]);
 
-    if (activityStore.loadingInitial) {
+    if (loadingInitial) {
         return <LoadingComponent />;
     }
 
